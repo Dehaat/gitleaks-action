@@ -2,6 +2,7 @@
 
 INPUT_CONFIG_PATH="$1"
 CONFIG=""
+INPUT_FAIL=$(default 'true' 'false' "${INPUT_FAIL}" 'true')
 
 # check if a custom config have been provided
 if [ -f "$GITHUB_WORKSPACE/$INPUT_CONFIG_PATH" ]; then
@@ -33,7 +34,12 @@ then
   echo "::set-output name=result::$CAPTURE_OUTPUT"
   echo "----------------------------------"
   echo -e $DONATE_MSG
-  exit 1
+  if [ "${INPUT_FAIL}" = "true" ]; then
+      echo "::error::${GITLEAKS_RESULT}"
+      exit 1
+  else
+      echo "::warning::${GITLEAKS_RESULT}"
+  fi
 else
   GITLEAKS_RESULT=$(echo -e "\e[32m✅ SUCCESS! Your code is good to go!")
   echo "$GITLEAKS_RESULT"
