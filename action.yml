@@ -1,4 +1,4 @@
-name: Gitleaks
+name: Gitleaks with ExitCode Option
 description: Run Gitleaks on Push and PR events
 branding:
   color: purple
