@@ -8,6 +8,10 @@ inputs:
     description: 'Path to config (relative to $GITHUB_WORKSPACE)'
     required: false
     default: '.github/.gitleaks.toml'
+  fail:
+    description: "Fail if secrets founded (default: true)"
+    required: false
+    default: "true"
 outputs:
   result: # id of output
     description: 'Gitleaks log output'
