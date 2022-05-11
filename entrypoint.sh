@@ -1,5 +1,25 @@
 #!/bin/bash
 
+function default() {
+    local _default="${1}"
+    local _result="${2}"
+    local _val="${3}"
+    local _defaultifnotset="${4}"
+
+    if [[ "${_defaultifnotset}" == "true" ]]; then
+        if [ "${#_val}" = 0 ]; then
+            echo "${_default}"
+            return
+        fi
+    fi
+
+    if [[ "${_val}" != "${_default}" ]]; then
+        echo "${_result}"
+    else
+        echo "${_val}"
+    fi
+}
+
 INPUT_CONFIG_PATH="$1"
 CONFIG=""
 INPUT_FAIL=$(default 'true' 'false' "${INPUT_FAIL}" 'true')
@@ -16,12 +36,12 @@ DONATE_MSG="👋 maintaining gitleaks takes a lot of work so consider sponsoring
 if [ "$GITHUB_EVENT_NAME" = "push" ]
 then
   echo gitleaks --path=$GITHUB_WORKSPACE --verbose --redact --report-path=$GITHUB_WORKSPACE/gitleaks-report.json $CONFIG
-  CAPTURE_OUTPUT=$(gitleaks --path=$GITHUB_WORKSPACE --verbose --redact --report-path=$GITHUB_WORKSPACE/gitleaks-report.json $CONFIG)
+  CAPTURE_OUTPUT=$(gitleaks --path=$GITHUB_WORKSPACE --verbose --redact $CONFIG)
 elif [ "$GITHUB_EVENT_NAME" = "pull_request" ]
 then 
   git --git-dir="$GITHUB_WORKSPACE/.git" log --left-right --cherry-pick --pretty=format:"%H" remotes/origin/$GITHUB_BASE_REF... > commit_list.txt
-  echo gitleaks --path=$GITHUB_WORKSPACE --verbose --redact --commits-file=commit_list.txt --report-path=$GITHUB_WORKSPACE/gitleaks-report.json $CONFIG
-  CAPTURE_OUTPUT=$(gitleaks --path=$GITHUB_WORKSPACE --verbose --redact --commits-file=commit_list.txt --report-path=$GITHUB_WORKSPACE/gitleaks-report.json $CONFIG)
+  echo gitleaks --path=$GITHUB_WORKSPACE --verbose --redact --commits-file=commit_list.txt $CONFIG
+  CAPTURE_OUTPUT=$(gitleaks --path=$GITHUB_WORKSPACE --verbose --redact --commits-file=commit_list.txt $CONFIG)
 fi
 
 if [ $? -eq 1 ]
